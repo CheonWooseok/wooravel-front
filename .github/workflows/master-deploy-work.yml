@@ -1,9 +1,10 @@
-name: master
+# sub-branch-deploy-work.yml
+name: sub-branch
 
 on:
   push:
     branches:
-      - main # master 브랜치에서 push 이벤트가 일어났을 때 실행
+      - main # sub-branch[branch name] 브랜치에서 push 이벤트가 일어났을 때 실행
 
 jobs:
   build:
@@ -16,15 +17,15 @@ jobs:
         uses: actions/cache@v1
         with:
           path: node_modules
-          key: ${{ runner.OS }}-master-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-master-build-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
 
-      - name: Install Dependencies
+      - name: Install Dependencies # node module install
         run: yarn
 
-      - name: Build
+      - name: Build # project build
         run: yarn build
 
       - name: Deploy
@@ -32,7 +33,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp \
-            --recursive \
-            --region ap-northeast-2 \
-            dist s3://wooravel-front
+          aws s3 sync ./build s3://wooravel-front
