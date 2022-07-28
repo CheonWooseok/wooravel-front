@@ -1,21 +1,19 @@
- a workflow yourself
-
 # main-deploy.yml
- 
+
 name: Deploy to Production
- 
+
 on:
   push:
     branches:
       - main
- 
+
 jobs:
   deploy:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout source code
         uses: actions/checkout@master
- 
+
       - name: Cache node modules
         uses: actions/cache@v1
         with:
@@ -24,15 +22,15 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
- 
+
       - name: Install Dependencies
         run: npm install
- 
+
       - name: Build
         run: npm run build
         env:
-          CI: ''
- 
+          CI: ""
+
       - name: Deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
